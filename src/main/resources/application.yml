@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_URL}?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnection=true
+    username: ${USER_NAME}
+    password: ${USER_PASSWORD}
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+  jackson:
+    property-naming-strategy: SNAKE_CASE
