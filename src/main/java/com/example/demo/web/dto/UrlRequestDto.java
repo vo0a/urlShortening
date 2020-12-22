@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UrlRequestDto {
+    // "originalUrl" : "http://" - json sequlize
     private String originalUrl;
 
     @Builder
