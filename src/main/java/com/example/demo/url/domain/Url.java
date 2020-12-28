@@ -1,4 +1,4 @@
-package com.example.demo.domain;
+package com.example.demo.url.domain;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class Url {
     private String shortenUrl;
 
     @Builder
-    public Url(String originalUrl, String shortenUrl){
+    public Url(String originalUrl, String shortenUrl) {
         this.originalUrl = originalUrl;
         this.shortenUrl = shortenUrl;
     }
