@@ -9,3 +9,5 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
       ddl-auto: create-drop
+service:
+    url: http://localhost:${PORT}/url/
