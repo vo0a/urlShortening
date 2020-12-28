@@ -1,4 +1,4 @@
-package com.example.demo.url.dto;
+package com.example.demo.url.model.dto;
 
 import com.example.demo.url.domain.Url;
 import lombok.Builder;
