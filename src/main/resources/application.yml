@@ -9,5 +9,3 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
       ddl-auto: create-drop
-  jackson:
-    property-naming-strategy: SNAKE_CASE
