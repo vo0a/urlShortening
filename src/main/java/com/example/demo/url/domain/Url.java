@@ -19,11 +19,13 @@ public class Url {
     private Long id;
     private String originalUrl;
     private String shortenUrl;
+    private String encodedUrl;
 
     @Builder
-    public Url(String originalUrl, String shortenUrl) {
+    public Url(String originalUrl, String shortenUrl, String encodedUrl) {
         this.originalUrl = originalUrl;
         this.shortenUrl = shortenUrl;
+        this.encodedUrl = encodedUrl;
     }
 
 }

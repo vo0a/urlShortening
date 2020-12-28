@@ -30,9 +30,9 @@ public class UrlApiController {
 
     }
 
-    @GetMapping("/url/{shortenUrl}")
-    public ModelAndView redirect(@PathVariable String shortenUrl) {
-        UrlResponseDto url = urlService.findByShortenUrl(shortenUrl);
+    @GetMapping("/url/{encodedUrl}")
+    public ModelAndView redirect(@PathVariable String encodedUrl) {
+        UrlResponseDto url = urlService.findByEncodedUrl(encodedUrl);
         return new ModelAndView("redirect:" + url.getOriginalUrl());
     }
 }
