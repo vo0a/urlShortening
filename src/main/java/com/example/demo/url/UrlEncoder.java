@@ -15,13 +15,14 @@ public class UrlEncoder {
     private final int BASE62 = 62;
     private final String BASE62_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    private String encoding(long param){
+    private String encoding(long param) {
         StringBuffer sb = new StringBuffer();
-        while(param > 0){
+        while (param > 0) {
             sb.append(BASE62_CHAR.charAt((int) (param % BASE62)));
             param /= BASE62;
         }
-        return URL_PREFIX + sb.toString();
+        // URL_PREFIX + sb.toString();
+        return sb.toString();
     }
 
     private long decoding(String param) {
@@ -43,12 +44,13 @@ public class UrlEncoder {
 
     // 디코딩
     public long urlDecoder(String encodeStr) throws NoSuchAlgorithmException {
+        /*
         if(encodeStr.trim().startsWith(URL_PREFIX)){
             encodeStr = encodeStr.replace(URL_PREFIX, "");
         }
+         */
         long decodeVal = decoding(encodeStr);
         log.info("base62 decode result:" + decodeVal);
         return decodeVal;
     }
-
 }
