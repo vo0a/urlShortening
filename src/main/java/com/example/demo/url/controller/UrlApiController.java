@@ -1,9 +1,9 @@
 package com.example.demo.url.controller;
 
 import com.example.demo.url.model.UrlResponse;
-import com.example.demo.url.service.UrlService;
 import com.example.demo.url.model.dto.UrlRequestDto;
 import com.example.demo.url.model.dto.UrlResponseDto;
+import com.example.demo.url.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class UrlApiController {
                 .status(HttpStatus.OK)
                 .body(UrlResponse.<UrlResponseDto>builder()
                         .code(HttpStatus.OK.value())
-                        .message("Create shorten Url")
+                        .message("Create shorten Url") // Todo : 메시지 부분 매개변수로 바꾸기
                         .data(url)
                         .build());
 
@@ -32,7 +32,7 @@ public class UrlApiController {
 
     @GetMapping("/url/{encodedUrl}")
     public ModelAndView redirect(@PathVariable String encodedUrl) {
-        UrlResponseDto url = urlService.findByEncodedUrl(encodedUrl);
+        UrlResponseDto url = urlService.findEncodedUrl(encodedUrl);
         return new ModelAndView("redirect:" + url.getOriginalUrl());
     }
 }

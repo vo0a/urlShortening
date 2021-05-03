@@ -1,59 +1,76 @@
 package com.example.demo.url.service;
 
+import com.example.demo.url.UrlEncoder;
 import com.example.demo.url.domain.Url;
-import com.example.demo.url.domain.UrlRepository;
+import com.example.demo.url.domain.UrlDao;
 import com.example.demo.url.model.dto.UrlRequestDto;
 import com.example.demo.url.model.dto.UrlResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UrlService {
 
     @Value("${service.url}")
-    private String baseUrl;
+    private String URL_PREFIX;
+    private final UrlValidator urlValidator = new UrlValidator();
+    private final UrlEncoder urlEncoder;
+    private final UrlDao urlDao;
 
-    private final UrlRepository urlRepository;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
+    @Transactional(rollbackFor = Exception.class)
     public UrlResponseDto save(UrlRequestDto requestDto) {
 
-        // Todo : 중복관점 - read먼저해서 있으면 돌려주고 없으면 쓰기
-        // 캐시와 마스터 에 있는지 먼저 확인.
+        String url = requestDto.getOriginalUrl();
+        String encodeUrl = "";
+        // 파라미터 유효성 검사
+        if (!url.isEmpty() && isUrl(url)) {
 
-        // print original Url
-        logger.info(requestDto.getOriginalUrl());
+            // TODO : 사용자도 같은지 확인
+            // 입력된 Url이 저장된 축약 Url이거나 원본 URL이 존재하지 않으면 = 저장된 정보가 없으면
+            // 새롭게 생성 후 sequence(id)를 구하고, id를 인코딩해 데이터베이스에 저장한다.
+            // Todo : 중복관점 - 캐시에 있는지 확인
+            // if()
+            if (!urlDao.exists(url)) {
+                Url entity = Url.builder()
+                        .originalUrl(requestDto.getOriginalUrl())
+                        .build();
+                // try catch 결과 확인 예외처리.
+                Url shortenUrl = urlDao.save(entity);
+                try {
+                    // id(시퀀스)를 Base62로 인코딩
+                    encodeUrl = encodingUrl(String.valueOf(shortenUrl.getId()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    shortenUrl.setShortenUrl(URL_PREFIX + encodeUrl, encodeUrl);
+                    urlDao.save(shortenUrl);
+                }
+            } else encodeUrl = urlDao.findByUrl(url).getEncodedUrl();
+        }
+        UrlResponseDto result = findEncodedUrl(encodeUrl);
 
-        // Todo : 더 짧게 만들기
-        String encodeToString = Base64Utils.encodeToString(requestDto.getOriginalUrl().getBytes());
-        String shortenUrl = baseUrl + encodeToString;
-
-        // print shorten Url
-        logger.info(shortenUrl);
-
-        Url entity = Url.builder()
-                .originalUrl(requestDto.getOriginalUrl())
-                .shortenUrl(shortenUrl)
-                .encodedUrl(encodeToString)
-                .build();
-
-        // Todo : try catch 결과 확인 예외처리.
-        urlRepository.save(entity);
-        UrlResponseDto ret = findByEncodedUrl(encodeToString);
-
-        return ret;
+        return result;
     }
 
+    public UrlResponseDto findEncodedUrl(String url) {
+        Url entity = urlDao.findByEncodedUrl(url)
+                .orElseThrow(() -> new IllegalArgumentException("URL not found : " + url));
 
-    public UrlResponseDto findByEncodedUrl(String encodeToString) {
-        Url entity = urlRepository.findByEncodedUrl(encodeToString)
-                .orElseThrow(() -> new IllegalArgumentException("URL not found : " + encodeToString));
 
         return new UrlResponseDto(entity);
+    }
+
+    public String encodingUrl(String seqStr) throws Exception {
+        return urlEncoder.urlEncoder((seqStr));
+    }
+
+    public boolean isUrl(String url) {
+        return urlValidator.isValid(url);
     }
 }

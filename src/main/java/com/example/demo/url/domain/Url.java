@@ -1,8 +1,6 @@
 package com.example.demo.url.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,4 +26,8 @@ public class Url {
         this.encodedUrl = encodedUrl;
     }
 
+    public void setShortenUrl(String shortenUrl, String encodedUrl) {
+        this.shortenUrl = shortenUrl;
+        this.encodedUrl = encodedUrl;
+    }
 }
